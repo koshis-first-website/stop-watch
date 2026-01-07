@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen Stopwatch Mastery</title>
+    <style>
+        /* 1. BLUE ZEN BACKGROUND */
+        body {
+            background: linear-gradient(180deg, #0f172a 0%, #1e40af 100%);
+            font-family: 'Monaco', 'Consolas', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Bubbles & Floating Text */
+        .bubble, .floating-credit {
+            position: absolute;
+            bottom: -100px;
+            animation: moveUp 10s linear infinite;
+            z-index: 1;
+        }
+
+        .bubble {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+        }
+
+        .floating-credit {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 1.2rem;
+            white-space: nowrap;
+            font-weight: bold;
+        }
+
+        @keyframes moveUp {
+            0% { transform: translateY(0); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-120vh); opacity: 0; }
+        }
+
+        /* 2. GLASS STOPWATCH UI */
+        .stopwatch-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            border-radius: 30px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            z-index: 10;
+            width: 350px;
+        }
+
+        .time-display {
+            font-size: 3rem;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .start { background: #22c55e; color: white; }
+        .stop { background: #ef4444; color: white; }
+        .lap { background: #3b82f6; color: white; }
+        .reset { background: #64748b; color: white; }
+        
+        .btn:hover { transform: scale(1.05); }
+
+        /* LAP LIST STYLING */
+        .laps-container {
+            max-height: 150px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .laps-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            color: white;
+            text-align: left;
+        }
+
+        .laps-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stopwatch-card">
+        <div class="time-display" id="display">00:00:00</div>
+        
+        <div class="controls">
+            <button class="btn start" id="startBtn">Start</button>
+            <button class="btn stop" id="stopBtn" style="display:none;">Stop</button>
+            <button class="btn lap" id="lapBtn">Lap</button>
+            <button class="btn reset" id="resetBtn">Reset</button>
+        </div>
+
+        <div class="laps-container">
+            <ul class="laps-list" id="lapsList">
+                </ul>
+        </div>
+    </div>
+
+    <script>
+        // --- BUBBLES & FLOATING CREDIT ---
+        function generateBackground() {
+            // Create normal bubbles
+            for (let i = 0; i < 12; i++) {
+                let b = document.createElement('div');
+                b.className = 'bubble';
+                let size = Math.random() * 50 + 10 + 'px';
+                b.style.width = size; b.style.height = size;
+                b.style.left = Math.random() * 100 + 'vw';
+                b.style.animationDelay = Math.random() * 10 + 's';
+                document.body.appendChild(b);
+            }
+            // Create "Made by Koshish" floating credit
+            for (let i = 0; i < 3; i++) {
+                let t = document.createElement('div');
+                t.className = 'floating-credit';
+                t.innerText = "Made by Koshish";
+                t.style.left = Math.random() * 80 + 'vw';
+                t.style.animationDelay = (i * 4) + 's';
+                document.body.appendChild(t);
+            }
+        }
+        generateBackground();
+
+        // --- STOPWATCH LOGIC ---
+        let startTime, elapsedTime = 0, timerInterval;
+        let lapCounter = 1;
+
+        const display = document.getElementById("display");
+        const lapsList = document.getElementById("lapsList");
+
+        function timeToString(time) {
+            let mm = Math.floor(time / 60000);
+            let ss = Math.floor((time % 60000) / 1000);
+            let ms = Math.floor((time % 1000) / 10);
+            return `${mm.toString().padStart(2, "0")}:${ss.toString().padStart(2, "0")}:${ms.toString().padStart(2, "0")}`;
+        }
+
+        document.getElementById("startBtn").onclick = function() {
+            startTime = Date.now() - elapsedTime;
+            timerInterval = setInterval(() => {
+                elapsedTime = Date.now() - startTime;
+                display.innerText = timeToString(elapsedTime);
+            }, 10);
+            this.style.display = "none";
+            document.getElementById("stopBtn").style.display = "inline-block";
+        };
+
+        document.getElementById("stopBtn").onclick = function() {
+            clearInterval(timerInterval);
+            this.style.display = "none";
+            document.getElementById("startBtn").style.display = "inline-block";
+        };
+
+        document.getElementById("resetBtn").onclick = function() {
+            clearInterval(timerInterval);
+            elapsedTime = 0;
+            lapCounter = 1;
+            display.innerText = "00:00:00";
+            lapsList.innerHTML = "";
+            document.getElementById("stopBtn").style.display = "none";
+            document.getElementById("startBtn").style.display = "inline-block";
+        };
+
+        document.getElementById("lapBtn").onclick = function() {
+            if (elapsedTime > 0) {
+                let li = document.createElement("li");
+                li.innerHTML = `<span>Lap ${lapCounter++}</span> <span>${timeToString(elapsedTime)}</span>`;
+                lapsList.prepend(li); // Put newest lap at the top
+            }
+        };
+    </script>
+</body>
+</html>
