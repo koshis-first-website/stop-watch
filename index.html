@@ -3,207 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Koshish's Stopwatch</title>
+    <title>Koshish Stopwatch Pro</title>
     <style>
         /* BACKGROUND & BUBBLES */
         body {
-            background: linear-gradient(180deg, #1e3a8a 0%, #3b82f6 100%);
+            background: radial-gradient(circle at center, #3b82f6, #1e3a8a);
             height: 100vh;
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             overflow: hidden;
             position: relative;
         }
 
-        .bubble, .watermark {
+        /* Floating elements (Bubbles + Credit) */
+        .float-item {
             position: absolute;
-            bottom: -120px;
-            animation: floatUp 10s linear infinite;
+            bottom: -150px;
+            animation: floatUp 12s linear infinite;
             z-index: 1;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: bold;
+            font-style: italic;
+            pointer-events: none;
         }
 
         .bubble {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.15);
             border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .watermark {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 2rem;
-            font-weight: bold;
-            font-style: italic;
-            white-space: nowrap;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         @keyframes floatUp {
-            from { transform: translateY(0); opacity: 0; }
-            50% { opacity: 0.5; }
-            to { transform: translateY(-130vh); opacity: 0; }
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.5; }
+            80% { opacity: 0.5; }
+            100% { transform: translateY(-130vh) rotate(20deg); opacity: 0; }
         }
 
-        /* THE FROSTED GLASS CARD */
-        .glass-container {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 30px;
-            border-radius: 35px;
+        /* THE GLASS CARD - EXACT MATCH */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1.5px solid rgba(255, 255, 255, 0.25);
+            padding: 40px 30px;
+            border-radius: 45px;
             text-align: center;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
             z-index: 10;
-            width: 360px;
+            width: 380px;
         }
 
-        .label-top { color: white; margin: 0; font-size: 1rem; opacity: 0.9; }
+        .top-label { 
+            color: white; 
+            letter-spacing: 1px; 
+            margin-bottom: 5px; 
+            font-size: 0.9rem;
+        }
 
-        /* DIGITAL TIME FONT */
-        .digital-time {
-            font-size: 4.5rem;
+        /* DIGITAL CLOCK LOOK */
+        .time-display {
+            font-size: 4.8rem;
             color: white;
-            /* This mimics the digital look from your image */
-            font-family: 'Courier New', Courier, monospace; 
-            font-weight: bold;
-            margin: 15px 0;
-            letter-spacing: -2px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 900;
+            margin: 10px 0;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
         }
 
-        /* BUTTONS MATCHING YOUR IMAGE */
-        .btn-row {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 10px;
+        /* BUTTONS */
+        .btn-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 15px;
         }
 
         .btn {
             border: none;
-            padding: 8px 0;
+            padding: 12px 0;
             border-radius: 25px;
             color: white;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            width: 80px;
-            font-size: 0.85rem;
-            transition: 0.2s;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
         }
 
-        .btn-start { background: #4ade80; } /* Light Green */
-        .btn-stop  { background: #f87171; } /* Soft Red */
-        .btn-lap   { background: #60a5fa; } /* Light Blue */
-        .btn-reset { background: #ffffff; color: #333; } /* White */
+        .btn-green { background: #22c55e; }
+        .btn-red   { background: #ef4444; }
+        .btn-blue  { background: #3b82f6; }
+        .btn-white { background: #ffffff; color: #1e3a8a; }
 
-        .btn:hover { opacity: 0.8; transform: translateY(-2px); }
+        .btn:hover { transform: scale(1.08); filter: brightness(1.1); }
 
-        .sub-label { color: white; margin-top: 10px; font-size: 0.9rem; opacity: 0.7; }
-
-        /* LAPS LIST */
-        .laps-container {
+        .bottom-label { 
+            color: rgba(255, 255, 255, 0.6); 
+            font-size: 0.8rem; 
             margin-top: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
+        }
+
+        /* LAP BOX */
+        .lap-list-box {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 25px;
             padding: 15px;
-            height: 140px;
+            height: 150px;
             overflow-y: auto;
             color: white;
-            text-align: left;
         }
 
-        .laps-list { list-style: none; padding: 0; margin: 0; font-size: 0.85rem; }
-        .laps-list li {
-            padding: 6px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        .lap-list-box ul { list-style: none; padding: 0; margin: 0; }
+        .lap-item {
             display: flex;
             justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
         }
     </style>
 </head>
 <body>
 
-    <div class="glass-container">
-        <p class="label-top">stopwatch-)</p>
-        <div class="digital-time" id="display">00:00:00</div>
+    <div class="glass-card">
+        <div class="top-label">stopwatch-)</div>
+        <div class="time-display" id="time">00:00:00</div>
         
-        <div class="btn-row">
-            <button class="btn btn-start" onclick="start()">Start</button>
-            <button class="btn btn-stop" onclick="stop()">stop</button>
-            <button class="btn btn-lap" onclick="lap()">Lap</button>
-            <button class="btn btn-reset" onclick="reset()">Reset</button>
+        <div class="btn-container">
+            <button class="btn btn-green" onclick="start()">Start</button>
+            <button class="btn btn-red" onclick="stop()">stop</button>
+            <button class="btn btn-blue" onclick="lap()">Lap</button>
+            <button class="btn btn-white" onclick="reset()">Reset</button>
         </div>
 
-        <p class="sub-label">(dislay:noe)</p>
+        <div class="bottom-label">(dislay:noe)</div>
 
-        <div class="laps-container">
-            <ul class="laps-list" id="lapsList">
-                <li><span>Startiee ( Hrs = DateNow...</span> <span>10</span></li>
-            </ul>
+        <div class="lap-list-box">
+            <ul id="laps"></ul>
         </div>
     </div>
 
     <script>
-        // --- FLOATING "MADE BY KOSHISH" & BUBBLES ---
-        function createElements() {
-            for (let i = 0; i < 15; i++) {
-                let el = document.createElement('div');
-                if (i % 6 === 0) {
-                    el.className = 'watermark';
-                    el.innerText = 'MADE BY KOSHISH';
+        // 1. FLOATING GENERATOR (Mixes bubbles and text)
+        function generateEffects() {
+            for (let i = 0; i < 20; i++) {
+                let item = document.createElement('div');
+                item.className = 'float-item';
+                
+                if (i % 5 === 0) {
+                    item.innerText = 'MADE BY KOSHISH';
+                    item.style.fontSize = '1.8rem';
                 } else {
-                    el.className = 'bubble';
+                    item.className += ' bubble';
                     let size = Math.random() * 60 + 20 + 'px';
-                    el.style.width = size; el.style.height = size;
+                    item.style.width = size; item.style.height = size;
                 }
-                el.style.left = Math.random() * 100 + 'vw';
-                el.style.animationDelay = Math.random() * 12 + 's';
-                document.body.appendChild(el);
+                
+                item.style.left = Math.random() * 100 + 'vw';
+                item.style.animationDelay = Math.random() * 10 + 's';
+                item.style.animationDuration = (Math.random() * 5 + 8) + 's';
+                document.body.appendChild(item);
             }
         }
-        createElements();
+        generateEffects();
 
-        // --- STOPWATCH LOGIC ---
-        let startTime, elapsedTime = 0, timerInterval;
+        // 2. STOPWATCH CORE
+        let startTime, elapsedTime = 0, interval;
         let lapNum = 1;
 
-        function formatTime(time) {
-            let mm = Math.floor(time / 60000);
-            let ss = Math.floor((time % 60000) / 1000);
-            let ms = Math.floor((time % 1000) / 10);
-            return mm.toString().padStart(2, "0") + ":" + 
-                   ss.toString().padStart(2, "0") + ":" + 
-                   ms.toString().padStart(2, "0");
+        function timeFormat(ms) {
+            let m = Math.floor(ms / 60000);
+            let s = Math.floor((ms % 60000) / 1000);
+            let mi = Math.floor((ms % 1000) / 10);
+            return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}:${mi.toString().padStart(2, '0')}`;
         }
 
         function start() {
-            if (timerInterval) return;
+            if (interval) return;
             startTime = Date.now() - elapsedTime;
-            timerInterval = setInterval(() => {
+            interval = setInterval(() => {
                 elapsedTime = Date.now() - startTime;
-                document.getElementById("display").innerText = formatTime(elapsedTime);
+                document.getElementById('time').innerText = timeFormat(elapsedTime);
             }, 10);
         }
 
         function stop() {
-            clearInterval(timerInterval);
-            timerInterval = null;
+            clearInterval(interval);
+            interval = null;
         }
 
         function reset() {
             stop();
             elapsedTime = 0;
-            document.getElementById("display").innerText = "00:00:00";
-            document.getElementById("lapsList").innerHTML = "";
             lapNum = 1;
+            document.getElementById('time').innerText = '00:00:00';
+            document.getElementById('laps').innerHTML = '';
         }
 
         function lap() {
             if (elapsedTime > 0) {
-                let li = document.createElement("li");
-                li.innerHTML = `<span>Lap ${lapNum++}</span> <span>${formatTime(elapsedTime)}</span>`;
-                document.getElementById("lapsList").prepend(li);
+                let li = document.createElement('li');
+                li.className = 'lap-item';
+                li.innerHTML = `<span>Lap ${lapNum++}</span> <span>${timeFormat(elapsedTime)}</span>`;
+                document.getElementById('laps').prepend(li);
             }
         }
     </script>
