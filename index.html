@@ -3,163 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mastery Stopwatch</title>
+    <title>Koshish's Stopwatch</title>
     <style>
-        /* 1. THE ZEN BLUE BACKGROUND & BUBBLES */
+        /* BACKGROUND & BUBBLES */
         body {
             background: linear-gradient(180deg, #1e3a8a 0%, #3b82f6 100%);
             height: 100vh;
             margin: 0;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: Arial, sans-serif;
             overflow: hidden;
             position: relative;
         }
 
         .bubble, .watermark {
             position: absolute;
-            bottom: -100px;
-            animation: floatUp 12s linear infinite;
+            bottom: -120px;
+            animation: floatUp 10s linear infinite;
             z-index: 1;
         }
 
         .bubble {
             background: rgba(255, 255, 255, 0.2);
             border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .watermark {
             color: rgba(255, 255, 255, 0.6);
-            font-size: 1.5rem;
+            font-size: 2rem;
             font-weight: bold;
             font-style: italic;
             white-space: nowrap;
         }
 
         @keyframes floatUp {
-            0% { transform: translateY(0); opacity: 0; }
-            20% { opacity: 0.6; }
-            100% { transform: translateY(-120vh); opacity: 0; }
+            from { transform: translateY(0); opacity: 0; }
+            50% { opacity: 0.5; }
+            to { transform: translateY(-130vh); opacity: 0; }
         }
 
-        /* 2. THE GLASS CARD */
+        /* THE FROSTED GLASS CARD */
         .glass-container {
             background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             padding: 30px;
-            border-radius: 40px;
+            border-radius: 35px;
             text-align: center;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
             z-index: 10;
-            width: 350px;
+            width: 360px;
         }
 
+        .label-top { color: white; margin: 0; font-size: 1rem; opacity: 0.9; }
+
+        /* DIGITAL TIME FONT */
         .digital-time {
-            font-size: 4rem;
+            font-size: 4.5rem;
             color: white;
-            font-family: 'Courier New', Courier, monospace;
-            margin: 20px 0;
-            letter-spacing: 2px;
+            /* This mimics the digital look from your image */
+            font-family: 'Courier New', Courier, monospace; 
+            font-weight: bold;
+            margin: 15px 0;
+            letter-spacing: -2px;
         }
 
-        /* 3. COLORED ROUNDED BUTTONS */
+        /* BUTTONS MATCHING YOUR IMAGE */
         .btn-row {
             display: flex;
             justify-content: center;
-            gap: 8px;
-            margin-bottom: 15px;
+            gap: 10px;
+            margin-bottom: 10px;
         }
 
         .btn {
             border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
+            padding: 8px 0;
+            border-radius: 25px;
             color: white;
-            font-weight: bold;
+            font-weight: 500;
             cursor: pointer;
-            font-size: 0.9rem;
-            transition: 0.3s;
-            flex: 1;
+            width: 80px;
+            font-size: 0.85rem;
+            transition: 0.2s;
         }
 
-        .start { background: #22c55e; }
-        .stop  { background: #ef4444; }
-        .lap   { background: #3b82f6; }
-        .reset { background: #ffffff; color: #333; }
+        .btn-start { background: #4ade80; } /* Light Green */
+        .btn-stop  { background: #f87171; } /* Soft Red */
+        .btn-lap   { background: #60a5fa; } /* Light Blue */
+        .btn-reset { background: #ffffff; color: #333; } /* White */
 
-        .btn:hover { transform: scale(1.05); filter: brightness(1.1); }
+        .btn:hover { opacity: 0.8; transform: translateY(-2px); }
 
-        /* 4. LAPS SECTION */
-        .laps-box {
+        .sub-label { color: white; margin-top: 10px; font-size: 0.9rem; opacity: 0.7; }
+
+        /* LAPS LIST */
+        .laps-container {
             margin-top: 20px;
-            background: rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 20px;
             padding: 15px;
-            max-height: 120px;
+            height: 140px;
             overflow-y: auto;
             color: white;
             text-align: left;
         }
 
-        .laps-box ul { list-style: none; padding: 0; margin: 0; }
-        .laps-box li {
-            padding: 8px 0;
+        .laps-list { list-style: none; padding: 0; margin: 0; font-size: 0.85rem; }
+        .laps-list li {
+            padding: 6px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             justify-content: space-between;
-            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
 
     <div class="glass-container">
-        <p style="color: white; margin: 0; opacity: 0.8;">stopwatch-)</p>
+        <p class="label-top">stopwatch-)</p>
         <div class="digital-time" id="display">00:00:00</div>
         
         <div class="btn-row">
-            <button class="btn start" onclick="start()">Start</button>
-            <button class="btn stop" onclick="stop()">Stop</button>
-            <button class="btn lap" onclick="lap()">Lap</button>
-            <button class="btn reset" onclick="reset()">Reset</button>
+            <button class="btn btn-start" onclick="start()">Start</button>
+            <button class="btn btn-stop" onclick="stop()">stop</button>
+            <button class="btn btn-lap" onclick="lap()">Lap</button>
+            <button class="btn btn-reset" onclick="reset()">Reset</button>
         </div>
 
-        <div class="laps-box">
-            <ul id="lapsList"></ul>
+        <p class="sub-label">(dislay:noe)</p>
+
+        <div class="laps-container">
+            <ul class="laps-list" id="lapsList">
+                <li><span>Startiee ( Hrs = DateNow...</span> <span>10</span></li>
+            </ul>
         </div>
     </div>
 
     <script>
-        // --- FLOATING ELEMENTS GENERATOR ---
-        function initScene() {
+        // --- FLOATING "MADE BY KOSHISH" & BUBBLES ---
+        function createElements() {
             for (let i = 0; i < 15; i++) {
                 let el = document.createElement('div');
-                if (i === 0 || i === 7) {
+                if (i % 6 === 0) {
                     el.className = 'watermark';
                     el.innerText = 'MADE BY KOSHISH';
                 } else {
                     el.className = 'bubble';
-                    let s = Math.random() * 60 + 20 + 'px';
-                    el.style.width = s; el.style.height = s;
+                    let size = Math.random() * 60 + 20 + 'px';
+                    el.style.width = size; el.style.height = size;
                 }
                 el.style.left = Math.random() * 100 + 'vw';
-                el.style.animationDelay = Math.random() * 15 + 's';
+                el.style.animationDelay = Math.random() * 12 + 's';
                 document.body.appendChild(el);
             }
         }
-        initScene();
+        createElements();
 
         // --- STOPWATCH LOGIC ---
         let startTime, elapsedTime = 0, timerInterval;
-        let lapCount = 1;
+        let lapNum = 1;
 
-        function timeToString(time) {
+        function formatTime(time) {
             let mm = Math.floor(time / 60000);
             let ss = Math.floor((time % 60000) / 1000);
             let ms = Math.floor((time % 1000) / 10);
@@ -169,11 +178,11 @@
         }
 
         function start() {
-            if (timerInterval) return; // Prevent double clicking
+            if (timerInterval) return;
             startTime = Date.now() - elapsedTime;
             timerInterval = setInterval(() => {
                 elapsedTime = Date.now() - startTime;
-                document.getElementById("display").innerText = timeToString(elapsedTime);
+                document.getElementById("display").innerText = formatTime(elapsedTime);
             }, 10);
         }
 
@@ -185,15 +194,15 @@
         function reset() {
             stop();
             elapsedTime = 0;
-            lapCount = 1;
             document.getElementById("display").innerText = "00:00:00";
             document.getElementById("lapsList").innerHTML = "";
+            lapNum = 1;
         }
 
         function lap() {
             if (elapsedTime > 0) {
                 let li = document.createElement("li");
-                li.innerHTML = `<span>Lap ${lapCount++}</span> <span>${timeToString(elapsedTime)}</span>`;
+                li.innerHTML = `<span>Lap ${lapNum++}</span> <span>${formatTime(elapsedTime)}</span>`;
                 document.getElementById("lapsList").prepend(li);
             }
         }
